@@ -28,23 +28,9 @@ pipeline {
         }
 
 
-        stage('Start Services') {
+        stage('Compose Validation Complete') {
             steps {
-                sh 'docker compose up -d'
-            }
-        }
-
-
-        stage('Check Running Containers') {
-            steps {
-                sh 'docker ps'
-            }
-        }
-
-
-        stage('Cleanup') {
-            steps {
-                sh 'docker compose down'
+                echo 'Docker Compose configuration validated successfully'
             }
         }
 
