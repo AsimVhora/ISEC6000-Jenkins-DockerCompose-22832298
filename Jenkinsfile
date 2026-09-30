@@ -16,20 +16,35 @@ pipeline {
         stage('Docker Version Check') {
             steps {
                 sh 'docker --version'
+                sh 'docker compose version'
             }
         }
 
 
-        stage('Build Docker Agent Image') {
+        stage('Validate Docker Compose') {
             steps {
-                sh 'docker build -t test-docker-agent -f Dockerfile.agent .'
+                sh 'docker compose config'
             }
         }
 
 
-        stage('Test Docker') {
+        stage('Start Services') {
             steps {
-                sh 'docker run --rm hello-world'
+                sh 'docker compose up -d'
+            }
+        }
+
+
+        stage('Check Running Containers') {
+            steps {
+                sh 'docker ps'
+            }
+        }
+
+
+        stage('Cleanup') {
+            steps {
+                sh 'docker compose down'
             }
         }
 
@@ -37,14 +52,8 @@ pipeline {
 
 
     post {
-
-        success {
-            echo 'CI Pipeline completed successfully'
+        always {
+            echo 'Docker Compose CI Pipeline completed'
         }
-
-        failure {
-            echo 'CI Pipeline failed'
-        }
-
     }
 }
