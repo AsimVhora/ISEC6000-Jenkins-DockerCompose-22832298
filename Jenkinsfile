@@ -6,35 +6,44 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Check Docker') {
+
+        stage('Docker Version Check') {
             steps {
                 sh 'docker --version'
             }
         }
 
-        stage('Test Docker Container') {
+
+        stage('Build Docker Agent Image') {
             steps {
-                sh 'docker pull hello-world'
-                sh 'docker run hello-world'
+                sh 'docker build -t test-docker-agent -f Dockerfile.agent .'
+            }
+        }
+
+
+        stage('Test Docker') {
+            steps {
+                sh 'docker run --rm hello-world'
             }
         }
 
     }
 
+
     post {
 
         success {
-            echo 'Pipeline completed successfully'
+            echo 'CI Pipeline completed successfully'
         }
 
         failure {
-            echo 'Pipeline failed'
+            echo 'CI Pipeline failed'
         }
 
     }
