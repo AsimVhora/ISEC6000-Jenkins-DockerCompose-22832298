@@ -3,12 +3,23 @@ FROM jenkins/inbound-agent:latest
 USER root
 
 RUN apt-get update && \
-    apt-get install -y docker.io && \
-    apt-get clean
+    apt-get install -y docker.io curl && \
+    rm -rf /var/lib/apt/lists/*
 
-ARG DOCKER_GID=983
 
-RUN groupadd -g ${DOCKER_GID} docker || true
+# Install Docker Compose
+RUN curl -SL https://github.com/docker/compose/releases/download/v2.40.3/docker-compose-linux-x86_64 \
+    -o /usr/local/bin/docker-compose && \
+    chmod +x /usr/local/bin/docker-compose
+
+
+# Install Docker Buildx
+RUN mkdir -p /usr/local/lib/docker/cli-plugins && \
+    curl -SL https://github.com/docker/buildx/releases/download/v0.17.1/buildx-v0.17.1.linux-amd64 \
+    -o /usr/local/lib/docker/cli-plugins/docker-buildx && \
+    chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
+
+
 RUN usermod -aG docker jenkins
 
 USER jenkins
